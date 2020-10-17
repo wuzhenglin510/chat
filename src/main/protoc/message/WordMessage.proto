@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package message;
+option java_package = "com.leo.chat.proto.message";
+
+message WordMessage {
+    string content = 1;
+}
