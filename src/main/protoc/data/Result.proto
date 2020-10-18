@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package data;
+option java_package = "com.leo.chat.proto.data";
+
+message Result {
+    string uid = 1;
+    bool succeed = 2;
+}

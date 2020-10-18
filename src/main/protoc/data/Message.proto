@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package data;
+option java_package = "com.leo.chat.proto.data";
+
+message Message {
+    string uid = 1;
+    fixed64 sendTime = 2;
+    repeated string topics = 3;
+    string content = 4;
+}

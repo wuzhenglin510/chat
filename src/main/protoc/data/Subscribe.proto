@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package data;
+option java_package = "com.leo.chat.proto.data";
+
+message Subscribe {
+    string uid = 1;
+    repeated string topics = 2;
+    string ticket = 3;
+}

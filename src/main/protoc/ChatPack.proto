@@ -2,29 +2,27 @@ syntax = "proto3";
 
 option java_package = "com.leo.chat.proto";
 
-import "message/AudioMessage.proto";
-import "message/FileMessage.proto";
-import "message/VideoMessage.proto";
-import "message/WordMessage.proto";
+import "data/Message.proto";
+import "data/Subscribe.proto";
+import "data/UnSubscribe.proto";
+import "data/Result.proto";
 
 message ChatPack {
     enum Type {
         PING = 0;
         PONG = 1;
-        WORD = 2;
-        AUDIO = 3;
-        VIDEO = 4;
-        FILE = 5;
+        SUBSCRIBE = 2;
+        UNSUBSCRIBE = 3;
+        MESSAGE = 4;
+        RESULT = 5;
     }
 
     Type type = 1;
-    fixed64 sendTime = 2;
-
-    oneof message {
-        message.WordMessage wordMessage = 4;
-        message.VideoMessage videoMessage = 5;
-        message.AudioMessage audioMessage = 6;
-        message.FileMessage fileMessage = 7;
+    oneof data {
+        data.Subscribe subscribe = 3;
+        data.UnSubscribe unsubscribe = 4;
+        data.Message message = 5;
+        data.Result result = 6;
     }
 
 }
