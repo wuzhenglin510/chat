@@ -8,6 +8,7 @@ import "data/UnSubscribe.proto";
 import "data/Result.proto";
 
 message ChatPack {
+
     enum Type {
         PING = 0;
         PONG = 1;
@@ -24,5 +25,6 @@ message ChatPack {
         data.Message message = 5;
         data.Result result = 6;
     }
+
 
 }

@@ -19,6 +19,7 @@ public class IdleDestroyHandler extends SimpleChannelInboundHandler<ChatPackOute
 
     public IdleDestroyHandler() {}
 
+
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ChatPackOuterClass.ChatPack chatPack) throws Exception {
         lossPingTimes = 0;

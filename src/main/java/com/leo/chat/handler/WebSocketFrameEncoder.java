@@ -25,7 +25,4 @@ public class WebSocketFrameEncoder extends MessageToMessageEncoder<ByteString> {
         out.add(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(msg.toByteArray())));
     }
 
-//    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
-//        out.add(new TextWebSocketFrame(Unpooled.wrappedBuffer("22".toString().getBytes())));
-//    }
 }

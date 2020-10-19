@@ -22,7 +22,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatPackOuterCla
             if (message.getTopicsList() != null && !message.getTopicsList().isEmpty()) {
                 boolean allSubscribed = ChannelGround.checkHasSubscribe(message.getTopicsList(), channel);
                 if (allSubscribed) {
-                    ChannelGround.sendMessage(message.getUid(), message.getSendTime(), message.getContent(), message.getTopicsList());
+                    ChannelGround.sendMessage(channel, message.getUid(), message.getSendTime(), message.getContent(), message.getTopicsList());
                     result = ResultUtil.buildPack(message.getUid(), true);
                 } else {
                     result = ResultUtil.buildPack(message.getUid(), false);

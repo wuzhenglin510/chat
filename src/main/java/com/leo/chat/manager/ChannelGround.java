@@ -40,17 +40,22 @@ public class ChannelGround {
      * @param channel
      */
     private static void subscribe(String topic, Channel channel) {
-        if (!topicChannelsMaps.contains(topic)) {
+        if (!topicChannelsMaps.containsKey(topic)) {
              synchronized (ChannelGround.class) {
-                 if (!topicChannelsMaps.contains(topic)) {
+                 if (!topicChannelsMaps.containsKey(topic)) {
                      topicChannelsMaps.put(topic, new ConcurrentHashMap<Channel, Boolean>());
                  }
              }
         }
         ConcurrentHashMap<Channel, Boolean> topicChannels = topicChannelsMaps.get(topic);
-        if (!topicChannels.contains(channel)) {
+        if (!topicChannels.containsKey(channel)) {
             topicChannels.put(channel, true);
         }
+        if (!channelSubscribedTopics.containsKey(channel)) {
+            channelSubscribedTopics.put(channel, new HashSet<String>());
+        }
+        HashSet<String> topicListened = channelSubscribedTopics.get(channel);
+        topicListened.add(topic);
     }
 
 
@@ -60,7 +65,9 @@ public class ChannelGround {
      * @param channel
      */
     public static void unsubscribe(List<String> topics, Channel channel) {
-        if (channelSubscribedTopics.contains(channel)) {
+        if (channelSubscribedTopics.containsKey(channel)) {
+            HashSet<String> topicListened = channelSubscribedTopics.get(channel);
+            topicListened.removeAll(topics);
             for (String topic : topics) {
                 unsubscribe(topic, channel);
             }
@@ -73,24 +80,24 @@ public class ChannelGround {
      * @param channel
      */
     private static void unsubscribe(String topic, Channel channel) {
-        if (topicChannelsMaps.contains(topic)) {
+        if (topicChannelsMaps.containsKey(topic)) {
             ConcurrentHashMap<Channel, Boolean> topicChannels = topicChannelsMaps.get(topic);
-            if (topicChannels.contains(channel)) {
+            if (topicChannels.containsKey(channel)) {
                 topicChannels.remove(channel);
             }
         }
     }
 
     public static boolean checkHasSubscribe(List<String> topics, Channel channel) {
-        if (channelSubscribedTopics.contains(channel)) {
+        if (channelSubscribedTopics.containsKey(channel)) {
             HashSet<String> subscribedTopics = channelSubscribedTopics.get(channel);
-            return subscribedTopics.contains(topics);
+            return subscribedTopics.containsAll(topics);
         } else {
             return false;
         }
     }
 
-    public static void sendMessage(String uid, long sendTime, String content, ProtocolStringList topics) {
+    public static void sendMessage(Channel currentChannel, String uid, long sendTime, String content, ProtocolStringList topics) {
         ChatPackOuterClass.ChatPack chatPack = ChatPackOuterClass.ChatPack.newBuilder()
                 .setType(ChatPackOuterClass.ChatPack.Type.MESSAGE)
                 .setMessage(MessageOuterClass.Message.newBuilder()
@@ -99,11 +106,26 @@ public class ChannelGround {
                         .setContent(content))
                 .build();
         for (String topic : topics) {
-            if (topicChannelsMaps.contains(topic)) {
+            if (topicChannelsMaps.containsKey(topic)) {
                 ConcurrentHashMap<Channel, Boolean> channels = topicChannelsMaps.get(topic);
                 for (Channel channel : channels.keySet()) {
-                    channel.writeAndFlush(chatPack);
+                    if (!currentChannel.equals(channel)) {
+                        channel.writeAndFlush(chatPack);
+                    }
                 }
+            }
+        }
+    }
+
+    public static void evict(Channel channel) {
+        if (channelSubscribedTopics.containsKey(channel)) {
+            HashSet<String> listenedTopics = channelSubscribedTopics.get(channel);
+            for (String topic : listenedTopics) {
+                if (topicChannelsMaps.containsKey(topic)) {
+                    ConcurrentHashMap<Channel, Boolean> topicChannels = topicChannelsMaps.get(topic);
+                    topicChannels.remove(channel);
+                }
+                channelSubscribedTopics.remove(channel);
             }
         }
     }

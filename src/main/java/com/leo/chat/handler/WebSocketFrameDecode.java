@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class WebSocketFrameDecode extends MessageToMessageDecoder<TextWebSocketFrame> {
+public class WebSocketFrameDecode extends MessageToMessageDecoder<BinaryWebSocketFrame> {
 
-    protected void decode(ChannelHandlerContext ctx, TextWebSocketFrame msg, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, BinaryWebSocketFrame msg, List<Object> out) throws Exception {
         ByteBuf buf = msg.content();
         out.add(buf);
         buf.retain();
